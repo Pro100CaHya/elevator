@@ -8,6 +8,7 @@
             :callStack="callStack"
             :position="position"
             :status="status"
+            :duration="duration"
         />
     </div>
 </template>
@@ -29,6 +30,10 @@ export default {
     props: {
         callStack: {
             type: Array,
+            required: true
+        },
+        duration: {
+            type: String,
             required: true
         },
         floors: {

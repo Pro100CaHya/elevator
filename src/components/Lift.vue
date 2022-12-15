@@ -5,6 +5,15 @@
         v-bind:style="{ bottom: status === `Moving` ? callStack[0] * 100 - 100 + `px` : position * 100 - 100 + `px`, transitionDuration: Math.abs(position - callStack[0]) + `s`}"
         :class="status === `Stopped` ? `lift_stopped` : ``"
     >
+        <div
+            class="lift__indicator"
+            :class="status === `Waiting` ? `lift__indicator_disabled` : ``"
+        >
+            <div :class="duration === `down` ? `lift__direction-down` : ``">
+                <span class="lift__indicator-arrow"></span>
+            </div>
+            <h2 class="lift__indicator-floor">{{status === "Moving" ? callStack[0] : position}}</h2>
+        </div>
     </div>
 </template>
 
@@ -13,6 +22,10 @@ export default {
     props: {
         callStack: {
             type: Array,
+            required: true
+        },
+        duration: {
+            type: String,
             required: true
         },
         position: {
@@ -52,6 +65,65 @@ export default {
 
 .lift_stopped {
     animation: .5s infinite alternate flick;
+}
+
+.lift__direction-down {
+    transform: rotate(180deg);
+}
+
+.lift__indicator {
+    width: 40px;
+    height: 25px;
+    background-color: rgba(0, 0, 0, 0.712);
+    border-radius: 5px;
+    margin: 5px auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.lift__indicator_disabled {
+    display: none;
+}
+
+.lift__indicator-arrow {
+    display: inline-block;
+    width: 2px;
+    height: 10px;
+    background-color: white;
+    position: relative;
+}
+
+.lift__indicator-arrow::before {
+    content: "";
+    display: inline-block;
+    position: absolute;
+    transform: rotate(40deg);
+    width: 2px;
+    height: 6px;
+    background-color: white;
+    left: -2px;
+    top: 0px;
+}
+
+.lift__indicator-arrow::after {
+    content: "";
+    display: inline-block;
+    position: absolute;
+    transform: rotate(-40deg);
+    width: 2px;
+    height: 6px;
+    background-color: white;
+    left: 2px;
+    top: 0px;
+}
+
+.lift__indicator-floor {
+    margin-left: 10px;
+    margin-top: 0;
+    margin-bottom: 0;
+    font-size: 1.15rem;
+    color: white;
 }
 
 @keyframes flick {

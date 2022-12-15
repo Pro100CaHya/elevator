@@ -6,6 +6,7 @@
             :position="position"
             :callStack="callStack"
             :status="status"
+            :duration="duration"
             v-for="lift in lifts"
             :key="lift"
         />
@@ -29,6 +30,10 @@ export default {
     props: {
         callStack: {
             type: Array,
+            required: true
+        },
+        duration: {
+            type: String,
             required: true
         },
         floors: {
