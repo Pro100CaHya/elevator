@@ -6,6 +6,7 @@
             :lifts="lifts"
             :status="status"
             v-for="floor in floors"
+            :key="floor"
         />
     </div>
 </template>

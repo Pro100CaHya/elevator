@@ -50,10 +50,6 @@ export default {
 
     methods: {
         callLift() {
-            if (this.status !== "Waiting") {
-                return;
-            }
-
             this.$emit("callLift", this.floor, "Moving");
         }
     }

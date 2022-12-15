@@ -2,9 +2,11 @@
     <div class="building">
         <shaft-list
             @stopLift="stopLift"
+            :callStack="callStack"
             :floors="floors"
             :lifts="lifts"
             :position="position"
+            :status="status"
         />
         <floor-list
             :floors="floors"
@@ -37,12 +39,28 @@ export default {
 
     methods: {
         callLift(floor, status) {
-            this.position = floor;
+            if (floor === this.position) {
+                return;
+            }
+
+            if (this.callStack.includes(floor)) {
+                return;
+            }
+
+            this.callStack.push(floor);
             this.status = status;
         },
 
-        stopLift(status) {
+        async stopLift(status) {
             this.status = status;
+            this.position = this.callStack.shift();
+
+            setTimeout(() => {
+                if (this.callStack.length !== 0) {
+                    console.log("Continue Moving")
+                    this.status = "Moving";
+                }
+            }, 2000);
         }
     }
 }

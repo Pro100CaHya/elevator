@@ -4,8 +4,10 @@
         v-bind:style="{ height: 100 * floors + `px` }"
     >
         <lift
-            :position="position"
             @stopLift="stopLift"
+            :callStack="callStack"
+            :position="position"
+            :status="status"
         />
     </div>
 </template>
@@ -21,17 +23,24 @@ export default {
     methods: {
         stopLift(status) {
             this.$emit("stopLift", status);
-            console.log(status)
         }
     },
 
     props: {
+        callStack: {
+            type: Array,
+            required: true
+        },
         floors: {
             type: Number,
             required: true
         },
         position: {
             type: Number,
+            required: true
+        },
+        status: {
+            type: String,
             required: true
         }
     }

@@ -2,10 +2,13 @@
     <div class="shaft-list">
         <shaft-item
             @stopLift="stopLift"
-            v-for="lift in lifts"
             :floors="floors"
             :lifts="lifts"
             :position="position"
+            :callStack="callStack"
+            :status="status"
+            v-for="lift in lifts"
+            :key="lift"
         />
     </div>
 </template>
@@ -25,6 +28,10 @@ export default {
     },
 
     props: {
+        callStack: {
+            type: Array,
+            required: true
+        },
         floors: {
             type: Number,
             required: true
@@ -35,6 +42,10 @@ export default {
         },
         position: {
             type: Number,
+            required: true
+        },
+        status: {
+            type: String,
             required: true
         }
     },
