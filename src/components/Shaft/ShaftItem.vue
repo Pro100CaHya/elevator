@@ -1,6 +1,12 @@
 <template>
-    <div class="shaft-item" v-bind:style="{ height: 100 * floors + `px` }">
-        <lift :position="position"/>
+    <div
+        class="shaft-item"
+        v-bind:style="{ height: 100 * floors + `px` }"
+    >
+        <lift
+            :position="position"
+            @stopLift="stopLift"
+        />
     </div>
 </template>
 
@@ -10,6 +16,13 @@ import Lift from "@/components/Lift.vue";
 export default {
     components: {
         Lift
+    },
+
+    methods: {
+        stopLift(status) {
+            this.$emit("stopLift", status);
+            console.log(status)
+        }
     },
 
     props: {

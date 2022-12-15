@@ -1,6 +1,12 @@
 <template>
     <div class="floor-list">
-        <floor-item @call="call" v-for="floor in floors" :floor="floor" :lifts="lifts"/>
+        <floor-item
+            @callLift="callLift"
+            :floor="floor"
+            :lifts="lifts"
+            :status="status"
+            v-for="floor in floors"
+        />
     </div>
 </template>
 
@@ -13,8 +19,8 @@ export default {
     },
 
     methods: {
-        call(floor) {
-            this.$emit("call", floor);
+        callLift(floor, status) {
+            this.$emit("callLift", floor, status);
         }
     },
 
@@ -26,6 +32,10 @@ export default {
         lifts: {
             type: Number,
             required: true
+        },
+        status: {
+            type: String,
+            reqiured: true
         }
     }
 }

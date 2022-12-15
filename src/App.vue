@@ -1,14 +1,16 @@
 <template>
     <div class="building">
         <shaft-list
+            @stopLift="stopLift"
             :floors="floors"
             :lifts="lifts"
             :position="position"
         />
         <floor-list
             :floors="floors"
+            :status="status"
             :lifts="lifts"
-            @call="call"
+            @callLift="callLift"
         />
     </div>
 </template>
@@ -28,12 +30,19 @@ export default {
             floors: 5,
             lifts: 1,
             position: 1,
+            status: "Waiting",
+            callStack: []
         }
     },
 
     methods: {
-        call(floor) {
+        callLift(floor, status) {
             this.position = floor;
+            this.status = status;
+        },
+
+        stopLift(status) {
+            this.status = status;
         }
     }
 }

@@ -1,8 +1,15 @@
 <template>
-    <div class="floor-item" v-bind:style="{ paddingLeft: 100 * lifts + `px` }">
+    <div
+        class="floor-item"
+        v-bind:style="{ paddingLeft: 100 * lifts + `px` }"
+    >
         <div class="floor-item__controller">
             <h2 class="floor-item__number">{{ floor }}</h2>
-            <floor-button @call="call" :floor="floor"/>
+            <floor-button
+                @callLift="callLift"
+                :floor="floor"
+                :status="status"
+            />
         </div>
     </div>
 </template>
@@ -16,8 +23,8 @@ export default {
     },
 
     methods: {
-        call(floor) {
-            this.$emit("call", floor);
+        callLift(floor, status) {
+            this.$emit("callLift", floor, status);
         }
     },
 
@@ -28,6 +35,10 @@ export default {
         },
         lifts: {
             type: Number,
+            required: true
+        },
+        status: {
+            type: String,
             required: true
         }
     }

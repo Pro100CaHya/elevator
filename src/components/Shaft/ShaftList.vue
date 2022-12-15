@@ -1,6 +1,7 @@
 <template>
     <div class="shaft-list">
         <shaft-item
+            @stopLift="stopLift"
             v-for="lift in lifts"
             :floors="floors"
             :lifts="lifts"
@@ -17,6 +18,12 @@ export default {
         ShaftItem
     },
 
+    methods: {
+        stopLift(status) {
+            this.$emit("stopLift", status);
+        }
+    },
+
     props: {
         floors: {
             type: Number,
@@ -30,7 +37,7 @@ export default {
             type: Number,
             required: true
         }
-    }
+    },
 }
 </script>
 
