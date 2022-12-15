@@ -39,15 +39,19 @@ export default {
 
     methods: {
         callLift(floor, status) {
-            if (floor === this.position) {
+            if (floor === this.position && this.callStack.length === 0) {
                 return;
             }
-
             if (this.callStack.includes(floor)) {
                 return;
             }
 
             this.callStack.push(floor);
+
+            if (this.status === "Stopped") {
+                return;
+            }
+            
             this.status = status;
         },
 
@@ -57,10 +61,14 @@ export default {
 
             setTimeout(() => {
                 if (this.callStack.length !== 0) {
-                    console.log("Continue Moving")
+                    console.log("Continue Moving");
                     this.status = "Moving";
                 }
-            }, 2000);
+
+                else {
+                    this.status = "Waiting";
+                }
+            }, 3000);
         }
     }
 }

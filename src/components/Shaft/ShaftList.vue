@@ -3,7 +3,6 @@
         <shaft-item
             @stopLift="stopLift"
             :floors="floors"
-            :lifts="lifts"
             :position="position"
             :callStack="callStack"
             :status="status"
