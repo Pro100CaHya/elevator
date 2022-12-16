@@ -9,6 +9,7 @@
                 @callLift="callLift"
                 :floor="floor"
                 :status="status"
+                :class="callStack.includes(floor) ? `floor-item__button_active` : ``"
             />
         </div>
     </div>
@@ -29,6 +30,10 @@ export default {
     },
 
     props: {
+        callStack: {
+            type: Array,
+            required: true
+        },
         floor: {
             type: Number,
             required: true
@@ -56,18 +61,30 @@ export default {
     padding-top: 5px;
 }
 
+.floor-item__controller {
+    width: fit-content;
+    text-align: center;
+}
+
 .floor-item__number {
     margin-top: 0;
     margin-bottom: 0;
     font-size: 1.3rem;
 }
 
-.floor-item__controller {
-    width: fit-content;
-    text-align: center;
-}
-
 .floor-item__button {
     margin-top: 5px;
+}
+
+.floor-item__button_active {
+    border: 2px solid orange;
+}
+
+.floor-item__button_active path {
+    fill: orange;
+}
+
+.floor-item__button_active circle {
+    fill: orange;
 }
 </style>

@@ -2,6 +2,7 @@
     <div class="floor-list">
         <floor-item
             @callLift="callLift"
+            :callStack="callStack"
             :floor="floor"
             :lifts="lifts"
             :status="status"
@@ -26,6 +27,10 @@ export default {
     },
 
     props: {
+        callStack: {
+            type: Array,
+            required: true
+        },
         floors: {
             type: Number,
             required: true

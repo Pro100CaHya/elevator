@@ -13,6 +13,7 @@
             :floors="floors"
             :status="status"
             :lifts="lifts"
+            :callStack="callStack"
             @callLift="callLift"
         />
     </div>
@@ -41,13 +42,11 @@ export default {
 
     methods: {
         setDuration() {
-            if (this.callStack.length === 0) {
-                this.duration = "";
-            }
-
-            this.duration = this.callStack[0] > this.position
-                ? "up"
-                : "down";
+            this.duration = this.callStack.length === 0
+                ? ""
+                : this.callStack[0] > this.position
+                    ? "up"
+                    : "down";
         },
 
         callLift(floor, status) {
@@ -64,14 +63,14 @@ export default {
                 return;
             }
 
-            this.setDuration("");
+            this.setDuration();
 
             this.status = status;
         },
 
-        async stopLift(status) {
+        stopLift(status) {
             this.status = status;
-            this.position = this.callStack.shift();
+            this.position = this.callStack.shift() || this.position;
 
             setTimeout(() => {
                 this.setDuration();
@@ -84,6 +83,70 @@ export default {
                     this.status = "Waiting";
                 }
             }, 3000);
+        },
+    },
+
+    mounted() {
+        const state = {};
+
+        if (localStorage.getItem("callStack") !== null) {
+            state.callStack = JSON.parse(localStorage.getItem("callStack"));
+        }
+
+        if (localStorage.getItem("duration") !== null) {
+            state.duration = localStorage.getItem("duration");
+        }
+
+        if (localStorage.getItem("position") !== null) {
+            state.position = Number(localStorage.getItem("position"));
+        }
+
+        if (localStorage.getItem("status") !== null) {
+            state.status = localStorage.getItem("status")
+        }
+
+        if (state.status === "Waiting") {
+            this.duration = state.duration;
+            this.position = state.position;
+            this.status = state.status;
+            return;
+        }
+
+        if (state.status === "Moving") {
+            this.position = state.position || 1;
+            this.duration = state.duration;
+            this.status = state.status;
+            this.callStack = [...state.callStack];
+            return;
+        }
+
+        if (state.status === "Stopped") {
+            this.callStack = [...state.callStack];
+            this.position = state.position;
+            this.callStack.unshift(this.position);
+            this.duration = state.duration;
+            this.stopLift("Stopped");
+        }
+    },
+
+    watch: {
+        callStack: {
+            handler: function(newCallStack) {
+                localStorage.callStack = JSON.stringify(newCallStack);
+            },
+            deep: true
+        },
+
+        duration(newDuration) {
+            localStorage.duration = newDuration;
+        },
+
+        position(newPosition) {
+            localStorage.position = Number(newPosition);
+        },
+
+        status(newStatus) {
+            localStorage.status = newStatus;
         }
     }
 }

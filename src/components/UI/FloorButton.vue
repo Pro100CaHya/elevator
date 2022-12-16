@@ -63,11 +63,16 @@ export default {
 
 .button_style_blue {
     background: white;
-    border: 1px solid #59B2CE;
+    border: 2px solid #59B2CE;
+}
+
+.button_style_blue:hover {
+    background-color: #f5f5f5;
 }
 
 .button_size_xxs {
     font-size: 0;
     padding: 5px;
+    border-radius: 3px;
 }
 </style>

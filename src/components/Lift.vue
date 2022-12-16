@@ -2,7 +2,7 @@
     <div
         @transitionend="stopLift"
         class="lift"
-        v-bind:style="{ bottom: status === `Moving` ? callStack[0] * 100 - 100 + `px` : position * 100 - 100 + `px`, transitionDuration: Math.abs(position - callStack[0]) + `s`}"
+        v-bind:style="{ bottom: position * 100 - 100 + `px` }"
         :class="status === `Stopped` ? `lift_stopped` : ``"
     >
         <div
@@ -38,16 +38,21 @@ export default {
         }
     },
 
+    updated() {
+        const lift = document.querySelector(".lift");
+        
+        setTimeout(() => {
+            if (this.status === "Moving") {
+                lift.style.transitionDuration = Math.abs(this.position - this.callStack[0]) + `s`;
+                lift.style.bottom = this.callStack[0] * 100 - 100 + `px`;
+            }
+        }, 0);
+    },
+
     methods: {
         stopLift() {
             console.log("Stopped")
             this.$emit("stopLift", "Stopped");
-        }
-    },
-
-    style() {
-        return {
-            bottom: 0
         }
     }
 }
