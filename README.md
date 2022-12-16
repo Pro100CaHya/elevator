@@ -1,19 +1,19 @@
-# trueconf-test-task
+# Elevator Simulator
 
-## Project setup
-```
-yarn install
-```
+Одностраничное приложение (SPA), эмулирующее работу лифтовой системы.
 
-### Compiles and hot-reloads for development
-```
-yarn serve
-```
+## Деплой
 
-### Compiles and minifies for production
+[Деплой базовой версии приложения](https://ele-vator.netlify.app/)
+
+## Установка приложения
+
 ```
-yarn build
+npm install
 ```
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+## Запуск приложения
+
+```
+npm run start
+```
