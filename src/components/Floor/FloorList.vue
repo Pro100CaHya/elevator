@@ -4,8 +4,8 @@
             @callLift="callLift"
             :callStack="callStack"
             :floor="floor"
+            :numberOfLifts="numberOfLifts"
             :lifts="lifts"
-            :status="status"
             v-for="floor in floors"
             :key="floor"
         />
@@ -35,13 +35,13 @@ export default {
             type: Number,
             required: true
         },
-        lifts: {
+        numberOfLifts: {
             type: Number,
             required: true
         },
-        status: {
-            type: String,
-            reqiured: true
+        lifts: {
+            type: Array,
+            required: true
         }
     }
 }

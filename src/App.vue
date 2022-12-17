@@ -4,16 +4,14 @@
             @stopLift="stopLift"
             :callStack="callStack"
             :floors="floors"
+            :numberOfLifts="numberOfLifts"
             :lifts="lifts"
-            :position="position"
-            :status="status"
-            :duration="duration"
         />
         <floor-list
             :floors="floors"
-            :status="status"
-            :lifts="lifts"
+            :numberOfLifts="numberOfLifts"
             :callStack="callStack"
+            :lifts="lifts"
             @callLift="callLift"
         />
     </div>
@@ -32,11 +30,10 @@ export default {
     data() {
         return {
             floors: 7,
-            lifts: 1,
-            position: 1,
-            status: "Waiting",
-            duration: null,
-            callStack: []
+            numberOfLifts: 3,
+            occupedLifts: 0,
+            callStack: [],
+            lifts: [],
         }
     },
 
@@ -50,74 +47,76 @@ export default {
         },
 
         callLift(floor, status) {
-            if (floor === this.position && this.callStack.length === 0) {
-                return;
-            }
-            if (this.callStack.includes(floor)) {
+            const isLiftLocatedOnTheFloor = !!this.lifts.find((lift) => lift.curFloor === floor && lift.status !== "Moving");
+            const isLiftMovingOnTheFloor = !!this.lifts.find((lift) => lift.nextFloor === floor);
+
+            const isCallNeed = this.callStack.includes(floor) || isLiftLocatedOnTheFloor || isLiftMovingOnTheFloor;
+
+            if (isCallNeed) {
                 return;
             }
 
             this.callStack.push(floor);
 
-            if (this.status === "Stopped") {
+            const calledLift = [...this.lifts].sort((a, b) => Math.abs(a.curFloor - floor) - Math.abs(b.curFloor - floor))
+                                        .find((lift) => lift.status === "Waiting");
+
+            if (calledLift === undefined) {
                 return;
             }
 
-            this.setDuration();
-            this.status = status;
+            const calledLiftIndex = this.lifts.findIndex((lift) => lift.id === calledLift.id);
+            this.lifts.splice(calledLiftIndex, 1, { ...calledLift, status, nextFloor: this.callStack[this.occupedLifts++] });
         },
 
-        stopLift(status) {
-            this.status = status;
-            this.position = this.callStack.shift() || this.position;
+        stopLift(status, id) {
+            const stoppedLift = this.lifts.find((lift) => lift.id === id);
+            const stoppedLiftIndex = this.lifts.findIndex((lift) => lift.id === id);
+
+            const stoppedLiftNextFloor = stoppedLift.nextFloor;
+
+            this.lifts.splice(stoppedLiftIndex, 1, { ...stoppedLift, status, curFloor: stoppedLiftNextFloor, nextFloor: null });
+
+            this.occupedLifts--;
+            this.callStack.splice(this.occupedLifts, 1);
 
             setTimeout(() => {
-                this.setDuration();
-
-                if (this.callStack.length !== 0) {
-                    this.status = "Moving";
+                if (this.callStack.length > this.occupedLifts) {
+                    console.log(this.occupedLifts, this.callStack.length);
+                    this.lifts.splice(stoppedLiftIndex, 1, { ...stoppedLift, curFloor: stoppedLiftNextFloor, nextFloor: this.callStack[this.occupedLifts++], status: "Moving" });
                 }
 
                 else {
-                    this.status = "Waiting";
+                    this.lifts.splice(stoppedLiftIndex, 1, { ...stoppedLift,  curFloor: stoppedLiftNextFloor, nextFloor: null, status: "Waiting" });
                 }
             }, 3000);
         },
     },
 
     mounted() {
-        const localStorageKeys = Object.keys(localStorage);
+        if (localStorage.length === 0) {
+            for (let i = 0; i < this.numberOfLifts; i++) {
+                this.lifts.push({
+                    id: i,
+                    curFloor: 1,
+                    nextFloor: null,
+                    status: "Waiting",
+                    duration: null
+                });
+            }
+        } else {
+            const localStorageKeys = Object.keys(localStorage);
 
-        for (let key of localStorageKeys) {
-            this[key] = JSON.parse(localStorage.getItem(key));
-        }
+            for (let key of localStorageKeys) {
+                this[key] = JSON.parse(localStorage.getItem(key));
+            }
 
-        if (this.status === "Stopped") {
-            this.callStack.unshift(this.position);
-            this.stopLift("Stopped");
+            if (this.status === "Stopped") {
+                this.callStack.unshift(this.position);
+                this.stopLift("Stopped");
+            }
         }
     },
-
-    watch: {
-        callStack: {
-            handler: function(newCallStack) {
-                localStorage.callStack = JSON.stringify(newCallStack);
-            },
-            deep: true
-        },
-
-        duration(newDuration) {
-            localStorage.duration = JSON.stringify(newDuration);
-        },
-
-        position(newPosition) {
-            localStorage.position = JSON.stringify(newPosition);
-        },
-
-        status(newStatus) {
-            localStorage.status = JSON.stringify(newStatus);
-        }
-    }
 }
 </script>
 

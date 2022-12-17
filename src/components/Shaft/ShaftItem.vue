@@ -6,9 +6,7 @@
         <lift
             @stopLift="stopLift"
             :callStack="callStack"
-            :position="position"
-            :status="status"
-            :duration="duration"
+            :lift="lift"
         />
     </div>
 </template>
@@ -22,8 +20,8 @@ export default {
     },
 
     methods: {
-        stopLift(status) {
-            this.$emit("stopLift", status);
+        stopLift(status, lift) {
+            this.$emit("stopLift", status, lift);
         }
     },
 
@@ -32,22 +30,15 @@ export default {
             type: Array,
             required: true
         },
-        duration: {
-            type: String
-        },
         floors: {
             type: Number,
             required: true
         },
-        position: {
-            type: Number,
-            required: true
-        },
-        status: {
-            type: String,
+        lift: {
+            type: Object,
             required: true
         }
-    }
+    },
 }
 </script>
 

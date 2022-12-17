@@ -2,17 +2,17 @@
     <div
         @transitionend="stopLift"
         class="lift"
-        v-bind:style="{ bottom: position * 100 - 100 + `px` }"
-        :class="status === `Stopped` ? `lift_stopped` : ``"
+        v-bind:style="{ bottom: lift.curFloor * 100 - 100 + `px` }"
+        :class="lift.status === `Stopped` ? `lift_stopped` : ``"
     >
         <div
             class="lift__indicator"
-            :class="status === `Waiting` ? `lift__indicator_disabled` : ``"
+            :class="lift.status === `Waiting` ? `lift__indicator_disabled` : ``"
         >
-            <div :class="duration === `down` ? `lift__direction-down` : ``">
+            <div :class="lift.duration === `down` ? `lift__direction-down` : ``">
                 <span class="lift__indicator-arrow"></span>
             </div>
-            <h2 class="lift__indicator-floor">{{status === "Moving" ? callStack[0] : position}}</h2>
+            <h2 class="lift__indicator-floor">{{lift.status === "Moving" ? lift.nextFloor : lift.curFloor}}</h2>
         </div>
     </div>
 </template>
@@ -24,33 +24,24 @@ export default {
             type: Array,
             required: true
         },
-        duration: {
-            type: String
-        },
-        position: {
-            type: Number,
-            required: true
-        },
-        status: {
-            type: String,
+        lift: {
+            type: Object,
             required: true
         }
     },
 
     updated() {
-        const lift = document.querySelector(".lift");
+        const liftElem = document.querySelectorAll(".lift")[this.lift.id];
         
-        setTimeout(() => {
-            if (this.status === "Moving") {
-                lift.style.transitionDuration = Math.abs(this.position - this.callStack[0]) + `s`;
-                lift.style.bottom = this.callStack[0] * 100 - 100 + `px`;
-            }
-        }, 0);
+        if (this.lift.status === "Moving") {
+            liftElem.style.transitionDuration = Math.abs(this.lift.curFloor - this.lift.nextFloor) + `s`;
+            liftElem.style.bottom = this.lift.nextFloor * 100 - 100 + `px`;
+        };
     },
 
     methods: {
         stopLift() {
-            this.$emit("stopLift", "Stopped");
+            this.$emit("stopLift", "Stopped", this.lift.id);
         }
     }
 }

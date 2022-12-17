@@ -3,12 +3,10 @@
         <shaft-item
             @stopLift="stopLift"
             :floors="floors"
-            :position="position"
             :callStack="callStack"
-            :status="status"
-            :duration="duration"
             v-for="lift in lifts"
-            :key="lift"
+            :lift="lift"
+            :key="lift.id"
         />
     </div>
 </template>
@@ -22,8 +20,8 @@ export default {
     },
 
     methods: {
-        stopLift(status) {
-            this.$emit("stopLift", status);
+        stopLift(status, lift) {
+            this.$emit("stopLift", status, lift);
         }
     },
 
@@ -32,25 +30,18 @@ export default {
             type: Array,
             required: true
         },
-        duration: {
-            type: String
-        },
         floors: {
             type: Number,
             required: true
         },
+        numberOfLifts: {
+            type: Number,
+            required: true
+        },
         lifts: {
-            type: Number,
+            type: Array,
             required: true
         },
-        position: {
-            type: Number,
-            required: true
-        },
-        status: {
-            type: String,
-            required: true
-        }
     },
 }
 </script>

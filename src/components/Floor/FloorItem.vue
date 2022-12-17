@@ -1,14 +1,13 @@
 <template>
     <div
         class="floor-item"
-        v-bind:style="{ paddingLeft: 100 * lifts + `px` }"
+        v-bind:style="{ paddingLeft: 100 * numberOfLifts + `px` }"
     >
         <div class="floor-item__controller">
             <h2 class="floor-item__number">{{ floor }}</h2>
             <floor-button
                 @callLift="callLift"
                 :floor="floor"
-                :status="status"
                 :class="callStack.includes(floor) ? `floor-item__button_active` : ``"
             />
         </div>
@@ -38,15 +37,15 @@ export default {
             type: Number,
             required: true
         },
-        lifts: {
+        numberOfLifts: {
             type: Number,
             required: true
         },
-        status: {
-            type: String,
+        lifts: {
+            type: Array,
             required: true
         }
-    }
+    },
 }
 </script>
 
