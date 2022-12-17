@@ -30,18 +30,35 @@ export default {
         }
     },
 
+    mounted() {
+        this.setLiftStyle();
+    },
+
     updated() {
         const liftElem = document.querySelectorAll(".lift")[this.lift.id];
         
-        if (this.lift.status === "Moving") {
-            liftElem.style.transitionDuration = Math.abs(this.lift.curFloor - this.lift.nextFloor) + `s`;
-            liftElem.style.bottom = this.lift.nextFloor * 100 - 100 + `px`;
-        };
+        setTimeout(() => {
+            if (this.lift.status === "Moving") {
+                liftElem.style.transitionDuration = Math.abs(this.lift.curFloor - this.lift.nextFloor) + `s`;
+                liftElem.style.bottom = this.lift.nextFloor * 100 - 100 + `px`;
+            };
+        }, 0)
     },
 
     methods: {
         stopLift() {
             this.$emit("stopLift", "Stopped", this.lift.id);
+        },
+
+        setLiftStyle() {
+            const liftElem = document.querySelectorAll(".lift")[this.lift.id];
+        
+            setTimeout(() => {
+                if (this.lift.status === "Moving") {
+                    liftElem.style.transitionDuration = Math.abs(this.lift.curFloor - this.lift.nextFloor) + `s`;
+                    liftElem.style.bottom = this.lift.nextFloor * 100 - 100 + `px`;
+                };
+            }, 0);
         }
     }
 }

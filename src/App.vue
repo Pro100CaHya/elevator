@@ -30,7 +30,7 @@ export default {
     data() {
         return {
             floors: 7,
-            numberOfLifts: 3,
+            numberOfLifts: 4,
             occupedLifts: 0,
             callStack: [],
             lifts: [],
@@ -72,17 +72,14 @@ export default {
         stopLift(status, id) {
             const stoppedLift = this.lifts.find((lift) => lift.id === id);
             const stoppedLiftIndex = this.lifts.findIndex((lift) => lift.id === id);
-
             const stoppedLiftNextFloor = stoppedLift.nextFloor;
 
             this.lifts.splice(stoppedLiftIndex, 1, { ...stoppedLift, status, curFloor: stoppedLiftNextFloor, nextFloor: null });
-
             this.occupedLifts--;
             this.callStack.splice(this.occupedLifts, 1);
 
             setTimeout(() => {
                 if (this.callStack.length > this.occupedLifts) {
-                    console.log(this.occupedLifts, this.callStack.length);
                     this.lifts.splice(stoppedLiftIndex, 1, { ...stoppedLift, curFloor: stoppedLiftNextFloor, nextFloor: this.callStack[this.occupedLifts++], status: "Moving" });
                 }
 
@@ -111,12 +108,42 @@ export default {
                 this[key] = JSON.parse(localStorage.getItem(key));
             }
 
-            if (this.status === "Stopped") {
-                this.callStack.unshift(this.position);
-                this.stopLift("Stopped");
+            const stoppedLifts = this.lifts.filter((lift) => lift.status === "Stopped");
+
+            for (let i = 0; i < this.lifts.length; i++) {
+                if (this.lifts[i].status === "Stopped") {
+                    const nextFloor = this.lifts[i].curFloor;
+
+                    const stoppedLift = {
+                        ...this.lifts[i],
+                        nextFloor
+                    };
+
+                    this.lifts.splice(i, 1, stoppedLift);
+                    this.callStack.splice(this.occupedLifts++, 0, nextFloor);
+                    this.stopLift("Stopped", this.lifts[i].id);
+                }
             }
         }
     },
+
+    watch: {
+        lifts: {
+            handler: function(newLifts) {
+                localStorage.lifts = JSON.stringify(newLifts);
+            },
+            deep: true
+        },
+        occupedLifts(newOccupedLifts) {
+            localStorage.occupedLifts = JSON.stringify(newOccupedLifts);
+        },
+        callStack: {
+            handler: function(newCallStack) {
+                localStorage.callStack = JSON.stringify(newCallStack);
+            },
+            deep: true
+        }
+    }
 }
 </script>
 
