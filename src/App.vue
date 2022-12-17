@@ -108,8 +108,6 @@ export default {
                 this[key] = JSON.parse(localStorage.getItem(key));
             }
 
-            const stoppedLifts = this.lifts.filter((lift) => lift.status === "Stopped");
-
             for (let i = 0; i < this.lifts.length; i++) {
                 if (this.lifts[i].status === "Stopped") {
                     const nextFloor = this.lifts[i].curFloor;
