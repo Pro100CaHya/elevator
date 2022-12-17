@@ -33,8 +33,7 @@ export default {
             required: true
         },
         duration: {
-            type: String,
-            required: true
+            type: String
         },
         floors: {
             type: Number,

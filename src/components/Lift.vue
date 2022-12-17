@@ -25,8 +25,7 @@ export default {
             required: true
         },
         duration: {
-            type: String,
-            required: true
+            type: String
         },
         position: {
             type: Number,
@@ -51,7 +50,6 @@ export default {
 
     methods: {
         stopLift() {
-            console.log("Stopped")
             this.$emit("stopLift", "Stopped");
         }
     }

@@ -31,11 +31,11 @@ export default {
 
     data() {
         return {
-            floors: 5,
+            floors: 7,
             lifts: 1,
             position: 1,
             status: "Waiting",
-            duration: "",
+            duration: null,
             callStack: []
         }
     },
@@ -43,7 +43,7 @@ export default {
     methods: {
         setDuration() {
             this.duration = this.callStack.length === 0
-                ? ""
+                ? null
                 : this.callStack[0] > this.position
                     ? "up"
                     : "down";
@@ -64,7 +64,6 @@ export default {
             }
 
             this.setDuration();
-
             this.status = status;
         },
 
@@ -87,44 +86,14 @@ export default {
     },
 
     mounted() {
-        const state = {};
+        const localStorageKeys = Object.keys(localStorage);
 
-        if (localStorage.getItem("callStack") !== null) {
-            state.callStack = JSON.parse(localStorage.getItem("callStack"));
+        for (let key of localStorageKeys) {
+            this[key] = JSON.parse(localStorage.getItem(key));
         }
 
-        if (localStorage.getItem("duration") !== null) {
-            state.duration = localStorage.getItem("duration");
-        }
-
-        if (localStorage.getItem("position") !== null) {
-            state.position = Number(localStorage.getItem("position"));
-        }
-
-        if (localStorage.getItem("status") !== null) {
-            state.status = localStorage.getItem("status")
-        }
-
-        if (state.status === "Waiting") {
-            this.duration = state.duration;
-            this.position = state.position;
-            this.status = state.status;
-            return;
-        }
-
-        if (state.status === "Moving") {
-            this.position = state.position || 1;
-            this.duration = state.duration;
-            this.status = state.status;
-            this.callStack = [...state.callStack];
-            return;
-        }
-
-        if (state.status === "Stopped") {
-            this.callStack = [...state.callStack];
-            this.position = state.position;
+        if (this.status === "Stopped") {
             this.callStack.unshift(this.position);
-            this.duration = state.duration;
             this.stopLift("Stopped");
         }
     },
@@ -138,15 +107,15 @@ export default {
         },
 
         duration(newDuration) {
-            localStorage.duration = newDuration;
+            localStorage.duration = JSON.stringify(newDuration);
         },
 
         position(newPosition) {
-            localStorage.position = Number(newPosition);
+            localStorage.position = JSON.stringify(newPosition);
         },
 
         status(newStatus) {
-            localStorage.status = newStatus;
+            localStorage.status = JSON.stringify(newStatus);
         }
     }
 }
