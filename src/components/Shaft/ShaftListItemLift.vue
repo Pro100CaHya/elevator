@@ -140,15 +140,19 @@ export default {
 @keyframes flick {
     25% {
         background-color: rgb(138, 202, 255);
+        opacity: 90%;
     }
     50% {
         background-color: rgb(157, 211, 255);
+        opacity: 80%;
     }
     75% {
         background-color: rgb(175, 219, 255);
+        opacity: 70%;
     }
     100% {
         background-color: rgb(200, 230, 255);
+        opacity: 60%;
     }
 }
 </style>

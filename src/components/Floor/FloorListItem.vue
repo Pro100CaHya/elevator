@@ -63,7 +63,7 @@ export default {
     width: 100%;
     border-top: 1.5px solid rgb(228, 228, 228);
     border-bottom: 1.5px solid rgb(228, 228, 228);
-    background: transparent;
+    background-color: transparent;
     padding-left: 210px;
     padding-top: 5px;
 }
