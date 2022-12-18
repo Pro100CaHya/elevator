@@ -1,8 +1,8 @@
 <template>
     <div
-        @transitionend="stopLift"
         class="lift"
-        v-bind:style="{ bottom: lift.curFloor * 100 - 100 + `px` }"
+        @transitionend="stopLift"
+        :style="{ bottom: lift.curFloor * 100 - 100 + `px` }"
         :class="lift.status === `Stopped` ? `lift_stopped` : ``"
     >
         <div
@@ -12,13 +12,17 @@
             <div :class="lift.duration === `down` ? `lift__direction-down` : ``">
                 <span class="lift__indicator-arrow"></span>
             </div>
-            <h2 class="lift__indicator-floor">{{lift.status === "Moving" ? lift.nextFloor : lift.curFloor}}</h2>
+            <h2 class="lift__indicator-floor">
+                {{lift.status === "Moving" ? lift.nextFloor : lift.curFloor}}
+            </h2>
         </div>
     </div>
 </template>
 
 <script>
 export default {
+    name: "ShaftListItemLift",
+
     props: {
         callStack: {
             type: Array,
@@ -35,21 +39,10 @@ export default {
     },
 
     updated() {
-        const liftElem = document.querySelectorAll(".lift")[this.lift.id];
-        
-        setTimeout(() => {
-            if (this.lift.status === "Moving") {
-                liftElem.style.transitionDuration = Math.abs(this.lift.curFloor - this.lift.nextFloor) + `s`;
-                liftElem.style.bottom = this.lift.nextFloor * 100 - 100 + `px`;
-            };
-        }, 0)
+        this.setLiftStyle();
     },
-
+    
     methods: {
-        stopLift() {
-            this.$emit("stopLift", "Stopped", this.lift.id);
-        },
-
         setLiftStyle() {
             const liftElem = document.querySelectorAll(".lift")[this.lift.id];
         
@@ -59,12 +52,15 @@ export default {
                     liftElem.style.bottom = this.lift.nextFloor * 100 - 100 + `px`;
                 };
             }, 0);
-        }
+        },
+        stopLift() {
+            this.$emit("stopLift", "Stopped", this.lift);
+        },
     }
 }
 </script>
 
-<style>
+<style scoped>
 .lift {
     position: absolute;
     height: 100px;

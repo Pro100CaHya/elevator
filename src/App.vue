@@ -1,18 +1,18 @@
 <template>
     <div class="building">
-        <shaft-list
+        <ShaftList
             @stopLift="stopLift"
             :callStack="callStack"
             :floors="floors"
             :numberOfLifts="numberOfLifts"
             :lifts="lifts"
         />
-        <floor-list
+        <FloorList
+            @callLift="callLift"
             :floors="floors"
             :numberOfLifts="numberOfLifts"
             :callStack="callStack"
             :lifts="lifts"
-            @callLift="callLift"
         />
     </div>
 </template>
@@ -20,6 +20,7 @@
 <script>
 import FloorList from "@/components/Floor/FloorList.vue";
 import ShaftList from "@/components/Shaft/ShaftList.vue";
+import { updateLifts } from "./helpers/updateLifts";
 
 export default {
     components: {
@@ -38,25 +39,14 @@ export default {
     },
 
     methods: {
-        setDuration(id) {
-            const curLift = this.lifts.find((lift) => lift.id === id);
-            const curLiftId = this.lifts.findIndex((lift) => lift.id === id);
-
-            curLift.duration = this.callStack.length === 0
-                ? null
-                : curLift.nextFloor > curLift.curFloor
-                    ? "up"
-                    : "down";
-
-            this.lifts.splice(curLiftId, 1, curLift);
-        },
-
         callLift(floor, status) {
             const isLiftLocatedOnTheFloor = !!this.lifts.find((lift) => lift.curFloor === floor && lift.status !== "Moving");
 
-            const isCallNeed = this.callStack.includes(floor) || ((isLiftLocatedOnTheFloor && this.numberOfLifts > 1) || (isLiftLocatedOnTheFloor && this.callStack.length === 0 && this.numberOfLifts === 1));
+            const floorNotNeedToPushInStack = this.callStack.includes(floor)
+                || ((isLiftLocatedOnTheFloor && this.numberOfLifts > 1)
+                || (isLiftLocatedOnTheFloor && this.callStack.length === 0 && this.numberOfLifts === 1));
 
-            if (isCallNeed) {
+            if (floorNotNeedToPushInStack) {
                 return;
             }
 
@@ -70,30 +60,54 @@ export default {
                 return;
             }
 
-            const calledLiftIndex = this.lifts.findIndex((lift) => lift.id === calledLift.id);
-            this.lifts.splice(calledLiftIndex, 1, { ...calledLift, status, nextFloor: this.callStack[this.occupedLifts++] });
-            this.setDuration(calledLiftIndex);
+            this.lifts = updateLifts(
+                this.lifts,
+                calledLift.id,
+                this.callStack.length,
+                {
+                    nextFloor: this.callStack[this.occupedLifts++],
+                    status
+                }
+            );
         },
 
-        stopLift(status, id) {
-            const stoppedLift = this.lifts.find((lift) => lift.id === id);
-            const stoppedLiftIndex = this.lifts.findIndex((lift) => lift.id === id);
-            const stoppedLiftNextFloor = stoppedLift.nextFloor;
+        stopLift(status, lift) {
+            const deleteFloorId = this.callStack.findIndex((floor) => lift.nextFloor === floor);
 
-            const deleteFloorId = this.callStack.findIndex((floor) => stoppedLift.nextFloor === floor);
+            this.lifts = updateLifts(
+                this.lifts,
+                lift.id,
+                this.callStack.length,
+                {
+                    status,
+                    curFloor: lift.nextFloor,
+                    nextFloor: null
+                }
+            );
 
-            this.lifts.splice(stoppedLiftIndex, 1, { ...stoppedLift, status, curFloor: stoppedLiftNextFloor, nextFloor: null });
             this.callStack.splice(deleteFloorId, 1);
             this.occupedLifts--;
 
             setTimeout(() => {
                 if (this.callStack.length > this.occupedLifts) {
-                    this.lifts.splice(stoppedLiftIndex, 1, { ...stoppedLift, curFloor: stoppedLiftNextFloor, nextFloor: this.callStack[this.occupedLifts++], status: "Moving" });
-                    this.setDuration(stoppedLiftIndex);
-                }
-
-                else {
-                    this.lifts.splice(stoppedLiftIndex, 1, { ...stoppedLift,  curFloor: stoppedLiftNextFloor, nextFloor: null, status: "Waiting" });
+                    this.lifts = updateLifts(
+                        this.lifts,
+                        lift.id,
+                        this.callStack.length,
+                        {
+                            status: "Moving",
+                            nextFloor: this.callStack[this.occupedLifts++]
+                        },
+                    );
+                } else {
+                    this.lifts = updateLifts(
+                        this.lifts,
+                        lift.id,
+                        this.callStack.length,
+                        {
+                            status: "Waiting",
+                        },
+                    );
                 }
             }, 3000);
         },
@@ -121,14 +135,17 @@ export default {
                 if (this.lifts[i].status === "Stopped") {
                     const nextFloor = this.lifts[i].curFloor;
 
-                    const stoppedLift = {
-                        ...this.lifts[i],
-                        nextFloor
-                    };
+                    this.lifts = updateLifts(
+                        this.lifts,
+                        this.lifts[i].id,
+                        this.callStack.length,
+                        {
+                            nextFloor
+                        }
+                    );
 
-                    this.lifts.splice(i, 1, stoppedLift);
                     this.callStack.splice(this.lifts.length - 1 - this.occupedLifts++, 0, nextFloor);
-                    this.stopLift("Stopped", this.lifts[i].id);
+                    this.stopLift("Stopped", this.lifts[i]);
                 }
             }
         }
@@ -154,28 +171,7 @@ export default {
 }
 </script>
 
-<style>
-* {
-    box-sizing: border-box;
-}
-
-html, body {
-    margin: 0;
-    padding: 0;
-}
-
-html {
-    height: 100%;
-    font-size: 12px;
-}
-
-#app {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
+<style scoped>
 .building {
     border: 2px solid black;
     padding: 10px;
@@ -185,27 +181,5 @@ html {
     width: 100%;
     background-color: rgb(253, 253, 253);
     position: relative;
-}
-
-.shafts {
-    position: absolute;
-}
-
-.shaft {
-    width: 80px;
-    background: transparent;
-    border-left: 2px solid rgb(211, 211, 211);
-    border-right: 2px solid rgb(211, 211, 211);
-    position: relative;
-    display: inline-block;
-    margin-right: 20px;
-}
-
-.elevator {
-    position: absolute;
-    bottom: 0;
-    height: 100px;
-    width: 76px;
-    background-color: rgb(165, 214, 255);
 }
 </style>

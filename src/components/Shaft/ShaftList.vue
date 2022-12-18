@@ -1,22 +1,24 @@
 <template>
     <div class="shaft-list">
-        <shaft-item
+        <ShaftListItem
             @stopLift="stopLift"
             :floors="floors"
             :callStack="callStack"
-            v-for="lift in lifts"
             :lift="lift"
             :key="lift.id"
+            v-for="lift in lifts"
         />
     </div>
 </template>
 
 <script>
-import ShaftItem from "./ShaftItem.vue";
+import ShaftListItem from "./ShaftListItem.vue";
 
 export default {
+    name: "ShaftList",
+
     components: {
-        ShaftItem
+        ShaftListItem
     },
 
     methods: {
@@ -24,7 +26,7 @@ export default {
             this.$emit("stopLift", status, lift);
         }
     },
-
+    
     props: {
         callStack: {
             type: Array,
@@ -46,7 +48,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .shaft-list {
     position: absolute;
 }
