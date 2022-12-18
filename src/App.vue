@@ -30,8 +30,8 @@ export default {
 
     data() {
         return {
-            floors: 7,
-            numberOfLifts: 4,
+            floors: 5,
+            numberOfLifts: 1,
             occupedLifts: 0,
             callStack: [],
             lifts: [],
