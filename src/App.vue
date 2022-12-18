@@ -38,12 +38,17 @@ export default {
     },
 
     methods: {
-        setDuration() {
-            this.duration = this.callStack.length === 0
+        setDuration(id) {
+            const curLift = this.lifts.find((lift) => lift.id === id);
+            const curLiftId = this.lifts.findIndex((lift) => lift.id === id);
+
+            curLift.duration = this.callStack.length === 0
                 ? null
-                : this.callStack[0] > this.position
+                : curLift.nextFloor > curLift.curFloor
                     ? "up"
                     : "down";
+
+            this.lifts.splice(curLiftId, 1, curLift);
         },
 
         callLift(floor, status) {
@@ -67,6 +72,7 @@ export default {
 
             const calledLiftIndex = this.lifts.findIndex((lift) => lift.id === calledLift.id);
             this.lifts.splice(calledLiftIndex, 1, { ...calledLift, status, nextFloor: this.callStack[this.occupedLifts++] });
+            this.setDuration(calledLiftIndex);
         },
 
         stopLift(status, id) {
@@ -83,6 +89,7 @@ export default {
             setTimeout(() => {
                 if (this.callStack.length > this.occupedLifts) {
                     this.lifts.splice(stoppedLiftIndex, 1, { ...stoppedLift, curFloor: stoppedLiftNextFloor, nextFloor: this.callStack[this.occupedLifts++], status: "Moving" });
+                    this.setDuration(stoppedLiftIndex);
                 }
 
                 else {
@@ -100,7 +107,7 @@ export default {
                     curFloor: 1,
                     nextFloor: null,
                     status: "Waiting",
-                    duration: null
+                    duration: null,
                 });
             }
         } else {
