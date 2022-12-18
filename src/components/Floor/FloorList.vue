@@ -1,23 +1,25 @@
 <template>
     <div class="floor-list">
-        <floor-item
+        <FloorListItem
             @callLift="callLift"
             :callStack="callStack"
             :floor="floor"
+            :numberOfLifts="numberOfLifts"
             :lifts="lifts"
-            :status="status"
-            v-for="floor in floors"
             :key="floor"
+            v-for="floor in floors"
         />
     </div>
 </template>
 
 <script>
-import FloorItem from "./FloorItem.vue";
+import FloorListItem from "./FloorListItem.vue";
 
 export default {
+    name: "FloorList",
+
     components: {
-        FloorItem
+        FloorListItem
     },
 
     methods: {
@@ -25,7 +27,7 @@ export default {
             this.$emit("callLift", floor, status);
         }
     },
-
+    
     props: {
         callStack: {
             type: Array,
@@ -35,19 +37,19 @@ export default {
             type: Number,
             required: true
         },
-        lifts: {
+        numberOfLifts: {
             type: Number,
             required: true
         },
-        status: {
-            type: String,
-            reqiured: true
+        lifts: {
+            type: Array,
+            required: true
         }
-    }
+    },
 }
 </script>
 
-<style>
+<style scoped>
 .floor-list {
     flex: 1 1 auto;
     display: flex;

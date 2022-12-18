@@ -3,55 +3,48 @@
         class="shaft-item"
         v-bind:style="{ height: 100 * floors + `px` }"
     >
-        <lift
+        <ShaftListItemLift
             @stopLift="stopLift"
             :callStack="callStack"
-            :position="position"
-            :status="status"
-            :duration="duration"
+            :lift="lift"
         />
     </div>
 </template>
 
 <script>
-import Lift from "@/components/Lift.vue";
+import ShaftListItemLift from "@/components/Shaft/ShaftListItemLift.vue";
 
 export default {
+    name: "ShaftListItem",
+
     components: {
-        Lift
+        ShaftListItemLift
     },
 
     methods: {
-        stopLift(status) {
-            this.$emit("stopLift", status);
+        stopLift(status, lift) {
+            this.$emit("stopLift", status, lift);
         }
     },
-
+    
     props: {
         callStack: {
             type: Array,
             required: true
         },
-        duration: {
-            type: String
-        },
         floors: {
             type: Number,
             required: true
         },
-        position: {
-            type: Number,
-            required: true
-        },
-        status: {
-            type: String,
+        lift: {
+            type: Object,
             required: true
         }
-    }
+    },
 }
 </script>
 
-<style>
+<style scoped>
 .shaft-item {
     background: transparent;
     border-left: 2px solid rgb(211, 211, 211);

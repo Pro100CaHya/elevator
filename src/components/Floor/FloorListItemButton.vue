@@ -1,6 +1,8 @@
 <template>
     <button
+        aria-label="Call lift"
         class="floor-item__button button button_style_blue button_size_xxs"
+        :class="callStack.includes(floor) ? `floor-item__button_active`: ``"
         @click="callLift"
     >
         <svg
@@ -37,17 +39,19 @@
 
 <script>
 export default {
+    name: "FloorListItemButton",
+
     props: {
         floor: {
             type: Number,
             required: true
         },
-        status: {
-            type: String,
+        callStack: {
+            type: Array,
             required: true
         }
     },
-
+    
     methods: {
         callLift() {
             this.$emit("callLift", this.floor, "Moving");
@@ -56,23 +60,25 @@ export default {
 }
 </script>
 
-<style>
-.button {
+<style scoped>
+.floor-item__button {
     cursor: pointer;
-}
-
-.button_style_blue {
+    margin-top: 5px;
+    padding: 5px;
+    font-size: 0;
     background: white;
     border: 2px solid #59B2CE;
 }
 
-.button_style_blue:hover {
-    background-color: #f5f5f5;
+.floor-item__button_active {
+    border: 2px solid orange;
 }
 
-.button_size_xxs {
-    font-size: 0;
-    padding: 5px;
-    border-radius: 3px;
+.floor-item__button_active path {
+    fill: orange;
+}
+
+.floor-item__button_active circle {
+    fill: orange;
 }
 </style>

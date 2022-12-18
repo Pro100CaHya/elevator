@@ -1,26 +1,33 @@
 <template>
     <div
         class="floor-item"
-        v-bind:style="{ paddingLeft: 100 * lifts + `px` }"
+        v-bind:style="{ paddingLeft: 100 * numberOfLifts + `px` }"
     >
         <div class="floor-item__controller">
             <h2 class="floor-item__number">{{ floor }}</h2>
-            <floor-button
+            <FloorListItemButton
                 @callLift="callLift"
                 :floor="floor"
-                :status="status"
-                :class="callStack.includes(floor) ? `floor-item__button_active` : ``"
+                :callStack="callStack"
             />
         </div>
     </div>
 </template>
 
 <script>
-import FloorButton from "@/components/UI/FloorButton.vue";
+import FloorListItemButton from "@/components/Floor/FloorListItemButton.vue";
 
 export default {
+    name: "FloorListItem",
+
     components: {
-        FloorButton
+        FloorListItemButton
+    },
+
+    data() {
+        return {
+            isCalled: this.callStack.includes(this.floor)
+        }
     },
 
     methods: {
@@ -28,7 +35,7 @@ export default {
             this.$emit("callLift", floor, status);
         }
     },
-
+    
     props: {
         callStack: {
             type: Array,
@@ -38,19 +45,19 @@ export default {
             type: Number,
             required: true
         },
-        lifts: {
+        numberOfLifts: {
             type: Number,
             required: true
         },
-        status: {
-            type: String,
+        lifts: {
+            type: Array,
             required: true
         }
-    }
+    },
 }
 </script>
 
-<style>
+<style scoped>
 .floor-item {
     height: 100px;
     width: 100%;
@@ -70,21 +77,5 @@ export default {
     margin-top: 0;
     margin-bottom: 0;
     font-size: 1.3rem;
-}
-
-.floor-item__button {
-    margin-top: 5px;
-}
-
-.floor-item__button_active {
-    border: 2px solid orange;
-}
-
-.floor-item__button_active path {
-    fill: orange;
-}
-
-.floor-item__button_active circle {
-    fill: orange;
 }
 </style>
