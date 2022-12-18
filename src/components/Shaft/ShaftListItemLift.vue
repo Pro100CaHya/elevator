@@ -41,11 +41,15 @@ export default {
     updated() {
         this.setLiftStyle();
     },
-    
+
     methods: {
         setLiftStyle() {
             const liftElem = document.querySelectorAll(".lift")[this.lift.id];
         
+            /*
+                Если лифт находится в движении, нужно обновить его координаты
+                и задать время перехода (transition'а)
+            */
             setTimeout(() => {
                 if (this.lift.status === "Moving") {
                     liftElem.style.transitionDuration = Math.abs(this.lift.curFloor - this.lift.nextFloor) + `s`;
