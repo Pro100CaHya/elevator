@@ -232,9 +232,9 @@ export default {
     border: 2px solid black;
     padding: 10px;
     display: flex;
-    max-width: 1024px;
-    max-height: 768px;
-    width: 100%;
+    height: fit-content;
+    width: fit-content;
+    min-width: 1024px;
     background-color: rgb(253, 253, 253);
     position: relative;
 }
