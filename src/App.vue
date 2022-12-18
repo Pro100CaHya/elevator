@@ -74,9 +74,11 @@ export default {
             const stoppedLiftIndex = this.lifts.findIndex((lift) => lift.id === id);
             const stoppedLiftNextFloor = stoppedLift.nextFloor;
 
+            const deleteFloorId = this.callStack.findIndex((floor) => stoppedLift.nextFloor === floor);
+
             this.lifts.splice(stoppedLiftIndex, 1, { ...stoppedLift, status, curFloor: stoppedLiftNextFloor, nextFloor: null });
             this.occupedLifts--;
-            this.callStack.splice(this.occupedLifts, 1);
+            this.callStack.splice(deleteFloorId, 1);
 
             setTimeout(() => {
                 if (this.callStack.length > this.occupedLifts) {
@@ -118,7 +120,7 @@ export default {
                     };
 
                     this.lifts.splice(i, 1, stoppedLift);
-                    this.callStack.splice(this.occupedLifts++, 0, nextFloor);
+                    this.callStack.splice(this.lifts.length - 1 - this.occupedLifts++, 0, nextFloor);
                     this.stopLift("Stopped", this.lifts[i].id);
                 }
             }
