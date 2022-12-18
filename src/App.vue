@@ -48,9 +48,8 @@ export default {
 
         callLift(floor, status) {
             const isLiftLocatedOnTheFloor = !!this.lifts.find((lift) => lift.curFloor === floor && lift.status !== "Moving");
-            const isLiftMovingOnTheFloor = !!this.lifts.find((lift) => lift.nextFloor === floor);
 
-            const isCallNeed = this.callStack.includes(floor) || isLiftLocatedOnTheFloor || isLiftMovingOnTheFloor;
+            const isCallNeed = this.callStack.includes(floor) || ((isLiftLocatedOnTheFloor && this.numberOfLifts > 1) || (isLiftLocatedOnTheFloor && this.callStack.length === 0 && this.numberOfLifts === 1));
 
             if (isCallNeed) {
                 return;
@@ -59,6 +58,7 @@ export default {
             this.callStack.push(floor);
 
             const calledLift = [...this.lifts].sort((a, b) => Math.abs(a.curFloor - floor) - Math.abs(b.curFloor - floor))
+                                        .filter((lift) => lift.curFloor !== floor)
                                         .find((lift) => lift.status === "Waiting");
 
             if (calledLift === undefined) {
@@ -77,8 +77,8 @@ export default {
             const deleteFloorId = this.callStack.findIndex((floor) => stoppedLift.nextFloor === floor);
 
             this.lifts.splice(stoppedLiftIndex, 1, { ...stoppedLift, status, curFloor: stoppedLiftNextFloor, nextFloor: null });
-            this.occupedLifts--;
             this.callStack.splice(deleteFloorId, 1);
+            this.occupedLifts--;
 
             setTimeout(() => {
                 if (this.callStack.length > this.occupedLifts) {
