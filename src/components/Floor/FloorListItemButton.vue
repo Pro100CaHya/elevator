@@ -66,8 +66,12 @@ export default {
     margin-top: 5px;
     padding: 5px;
     font-size: 0;
-    background: white;
+    background-color: white;
     border: 2px solid #59B2CE;
+}
+
+.floor-item__button:hover {
+    background-color: #f5f5f5;
 }
 
 .floor-item__button_active {
